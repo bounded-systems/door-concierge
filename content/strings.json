@@ -5,6 +5,6 @@
   },
   "description": {
     "type": "meta",
-    "value": "door-concierge is concierged packaged as a standalone, pinned OCI image. concierged is an"
+    "value": "door-concierge is concierged packaged as a standalone, pinned OCI image.  concierged is an introducer: it holds a leased registry and, on resolve, hands back attenuated door references — pure routing.  It never connects to a provider, so it holds no NIC (--network=none) and ne…"
   }
 }
