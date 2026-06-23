@@ -1,0 +1,10 @@
+{
+  "name": {
+    "type": "name",
+    "value": "Door Concierge"
+  },
+  "description": {
+    "type": "meta",
+    "value": "door-concierge is concierged packaged as a standalone, pinned OCI image. concierged is an"
+  }
+}
