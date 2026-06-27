@@ -8,7 +8,9 @@
  *   nix run nixpkgs#bun -- test tests/concierged.test.ts
  */
 import { test, expect, describe, beforeEach } from "bun:test";
+import { createPublicKey, verify as edVerify } from "node:crypto";
 import { handleRequest, registry } from "../concierged.ts";
+import { verifyGrantWithKeys, type SignedGrant, type IssuerKeys } from "../guest-room/mod.ts";
 
 const rpc = async (method: string, params: Record<string, unknown> = {}) =>
   handleRequest(JSON.stringify({ id: "t", method, params }));
@@ -34,14 +36,29 @@ describe("concierged register/resolve", () => {
     expect(resp.error?.code).toBe("CAPABILITY_UNAVAILABLE");
   });
 
-  test("PHASE 1: resolve carries an unsigned binding (sig null) — not a boundary yet", async () => {
+  test("resolve mints a SIGNED grant that verifies against the published keys", async () => {
     await rpc("register", { capability: "scout", door: "/run/scoutd.sock" });
     const resp = await rpc("resolve", { capability: "scout", audience: "box-42" });
-    const binding = (resp.result as { binding: { audience: string; exp: number; nonce: string; sig: null } }).binding;
-    expect(binding.sig).toBeNull(); // prx signs in Phase 2; until then nothing verifies
-    expect(binding.audience).toBe("box-42");
-    expect(typeof binding.exp).toBe("number");
-    expect(typeof binding.nonce).toBe("string");
+    const door = (resp.result as { door: SignedGrant }).door;
+
+    // Bound to the caller, short-lived, nonce-fresh, names the issuer key.
+    expect(door.binding.audience).toBe("box-42");
+    expect(typeof door.binding.exp).toBe("number");
+    expect(typeof door.binding.nonce).toBe("string");
+    expect(door.binding.keyId.length).toBeGreaterThan(0);
+    expect(door.signature.length).toBeGreaterThan(0);
+
+    // The serving room verifies it against the issuer's PUBLISHED key set (keyless).
+    const keys = (await rpc("keys")).result as IssuerKeys;
+    const verifyWith = (d: string, s: string, pem: string): boolean =>
+      edVerify(null, Buffer.from(d), createPublicKey(pem), Buffer.from(s, "base64"));
+    expect(verifyGrantWithKeys(door, { audience: "box-42", now: Date.now() }, keys, verifyWith)).toEqual({ ok: true });
+
+    // ...and a different room cannot present it (audience binding).
+    expect(verifyGrantWithKeys(door, { audience: "other", now: Date.now() }, keys, verifyWith)).toEqual({
+      ok: false,
+      reason: "audience-mismatch",
+    });
   });
 
   test("resolve attenuates by the caller's want, never wider than the ceiling", async () => {
