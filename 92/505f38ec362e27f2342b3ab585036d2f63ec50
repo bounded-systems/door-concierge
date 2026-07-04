@@ -1,0 +1,26 @@
+flake.nix
+  s_70508ca017cb29::t_68e513a71218dc 127-144,163
+  s_70508ca017cb29::t_5ad141c2b8af0f 17-20,22
+.github/workflows/wire-check.yml
+  s_70508ca017cb29::t_e35eee654ee0dd 1-19
+tests/wire-methods.ts
+  s_70508ca017cb29::t_212fbed3fdc83a 1-39
+flake.lock
+  s_70508ca017cb29::t_6d064e74cebede 3-18,71
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "92505f38ec362e27f2342b3ab585036d2f63ec50",
+  "prompts": {},
+  "sessions": {
+    "s_70508ca017cb29": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d283f13f-34c8-429b-8cb1-b020e645c0e4",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Robert DeLanghe <1240090+bdelanghe@users.noreply.github.com>"
+    }
+  }
+}
