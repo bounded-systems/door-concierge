@@ -1,5 +1,21 @@
 {
   "nodes": {
+    "concierge-wire": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1783200414,
+        "narHash": "sha256-CoKsHJcU7KBdKiK26q7ZtxcXHfESdCe5TTQx3sne2Tk=",
+        "owner": "bounded-systems",
+        "repo": "concierge-wire",
+        "rev": "24ca9afd9051e217311428c20fa11435161dc8ed",
+        "type": "github"
+      },
+      "original": {
+        "owner": "bounded-systems",
+        "repo": "concierge-wire",
+        "type": "github"
+      }
+    },
     "door-kit": {
       "flake": false,
       "locked": {
@@ -52,6 +68,7 @@
     },
     "root": {
       "inputs": {
+        "concierge-wire": "concierge-wire",
         "door-kit": "door-kit",
         "guest-room": "guest-room",
         "nixpkgs": "nixpkgs"

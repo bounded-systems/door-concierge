@@ -14,8 +14,12 @@
   inputs.guest-room.flake = false;
   inputs.door-kit.url = "github:bounded-systems/door-kit/a3ae40e5075e3dbded3db9a0d345f842984a646b";
   inputs.door-kit.flake = false;
+  # the PUBLISHED concierge-wire agreement — concierged's own METHODS are checked
+  # against it, so the contract (not this daemon) is the source of truth.
+  inputs.concierge-wire.url = "github:bounded-systems/concierge-wire";
+  inputs.concierge-wire.flake = false;
 
-  outputs = { self, nixpkgs, guest-room, door-kit }:
+  outputs = { self, nixpkgs, guest-room, door-kit, concierge-wire }:
     let
       systems = [ "aarch64-linux" "x86_64-linux" ];
       forEach = nixpkgs.lib.genAttrs systems;
@@ -120,8 +124,24 @@
         };
 
       # ── mirror checks: the vendored dirs must match the pinned inputs ──
-      checks.aarch64-darwin =
-        let pkgs = pkgsFor "aarch64-darwin";
+      # ── daemon-side wire conformance (Linux, so CI actually runs it) ──
+      # concierged's METHODS table must match the published concierge-wire agreement.
+      checks = (forEach (system:
+        let pkgs = pkgsFor system;
+        in {
+          concierge-wire-methods = pkgs.runCommand "concierge-wire-methods" {
+            nativeBuildInputs = [ pkgs.deno ];
+            DENO_DIR = "/tmp/deno";
+          } ''
+            export HOME=$TMPDIR
+            deno run --no-remote --allow-read ${./tests/wire-methods.ts} \
+              ${./concierged.ts} \
+              ${concierge-wire}/manifest.json
+            touch $out
+          '';
+        })) // {
+        # ── mirror checks: the vendored dirs must match the pinned inputs ──
+        aarch64-darwin = let pkgs = pkgsFor "aarch64-darwin";
         in {
           guest-room-mirror = pkgs.runCommand "guest-room-mirror" { } ''
             for f in mod.ts daemon.ts protocol.ts; do
@@ -140,5 +160,6 @@
             touch $out
           '';
         };
+      };
     };
 }
