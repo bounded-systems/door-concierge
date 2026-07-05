@@ -1,0 +1,24 @@
+concierged.ts
+  s_70508ca017cb29::t_a42e3c3887604d 333-334
+  s_70508ca017cb29::t_3cc7dc2cb5f79e 269-314
+flake.nix
+  s_70508ca017cb29::t_259900940ed285 49-51
+tests/wire-shadow.test.ts
+  s_70508ca017cb29::t_b7be6fc7e7f93f 1-23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "4c79d4636f0b0314cb0ae3ecbdaf1e22e79e162e",
+  "prompts": {},
+  "sessions": {
+    "s_70508ca017cb29": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d283f13f-34c8-429b-8cb1-b020e645c0e4",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Robert DeLanghe <1240090+bdelanghe@users.noreply.github.com>"
+    }
+  }
+}
