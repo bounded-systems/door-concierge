@@ -46,6 +46,9 @@
               conciergedSrc = pkgs.runCommand "concierged-src" { } ''
                 mkdir -p $out/app/lib $out/app/guest-room
                 cp ${./concierged.ts} $out/app/concierged.ts
+                # the published concierge-wire agreement, next to concierged for the
+                # runtime shadow-validation (log-only). Kept fresh by the pin.
+                cp ${concierge-wire}/manifest.json $out/app/concierge-wire.manifest.json
                 cp ${./lib/runtime.ts} $out/app/lib/runtime.ts
                 cp ${./guest-room/mod.ts} $out/app/guest-room/mod.ts
                 cp ${./guest-room/daemon.ts} $out/app/guest-room/daemon.ts
